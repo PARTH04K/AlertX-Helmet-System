@@ -1,1 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>AlertX Tracking</title>
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<style>
+body{margin:0}
+#map{height:100vh}
+.banner{
+  position:absolute;top:10px;left:50%;
+  transform:translateX(-50%);
+  background:red;color:white;
+  padding:10px 20px;border-radius:10px;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div id="map"></div>
+<div id="banner" class="banner">LIVE TRACKING</div>
+
+<script>
+
+firebase.initializeApp({
+  apiKey:"YOUR_API_KEY",
+  databaseURL:"https://alertx-system-default-rtdb.asia-southeast1.firebasedatabase.app"
+});
+
+const db = firebase.database();
+
+var map = L.map('map').setView([23.0225,72.5714],15);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+var marker = L.marker([23.0225,72.5714]).addTo(map);
+
+db.ref("devices/helmet01").on("value", snap=>{
+  const d = snap.val();
+  if(!d) return;
+
+  marker.setLatLng([d.lat,d.lon]);
+  map.setView([d.lat,d.lon]);
+});
+
+</script>
+
+</body>
+</html>
